@@ -1,7 +1,6 @@
 const fs = require('node:fs');
 const readline = require('node:readline')
 
-
 function collect() {
   const result = [];
   return function next(item) {
@@ -22,11 +21,9 @@ async function process_file(file, parse_line, reducer) {
     input: fs.createReadStream(file),
     crlfDelay: Infinity,
   });
-
   for await (const line of rl) {
     reducer(parse_line(line));
   }
-
   return reducer;
 }
 
