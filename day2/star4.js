@@ -3,10 +3,6 @@ const readline = require('node:readline')
 
 const count_color_r = /(\d+) ([a-z]+)/g;
 
-function sum(a, b) {
-  return a + b;
-}
-
 function collect_round(round) {
   return Object.fromEntries(
     [...round.matchAll(count_color_r)].map(([_, value, key]) => [key, parseInt(value)])
@@ -42,14 +38,6 @@ function minimal_cubes(rounds) {
 
 function cube_power_set({red = 0, blue = 0, green = 0}) {
   return red * blue * green;
-}
-
-function valid_round({red = 0, blue = 0, green = 0}) {
-  return red <= 12 && green <= 13 && blue <= 14;
-}
-
-function validate({rounds}) {
-  return rounds.every(valid_round)
 }
 
 async function process_input() {
