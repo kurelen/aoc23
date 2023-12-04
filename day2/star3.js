@@ -3,13 +3,10 @@ const readline = require('node:readline')
 
 const count_color_r = /(\d+) ([a-z]+)/g;
 
-function sum(a, b) {
-  return a + b;
-}
-
 function collect_round(round) {
   return Object.fromEntries(
-    [...round.matchAll(count_color_r)].map(([_, value, key]) => [key, parseInt(value)])
+    [...round.matchAll(count_color_r)]
+      .map(([_, value, key]) => [key, parseInt(value)])
   )
 }
 
@@ -23,7 +20,6 @@ function parse_line(line) {
   const [gameString, roundsString] = line.split(':');
   const rounds = roundsString.split(';').map(collect_round);
   const game = game_number(gameString);
-
   return {
     game,
     rounds
