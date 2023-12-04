@@ -4,11 +4,12 @@ const readline = require('node:readline')
 function first(xs) {
   return xs[0];
 }
+
 function last(xs) {
   return xs[xs.length - 1];
 }
 
-function createScanner(s, res) {
+function create_scanner(s, res) {
   const l = s.length;
   let idx = 0;
   return function scan(ch) {
@@ -29,7 +30,7 @@ function createScanner(s, res) {
   }
 }
 
-function digitScanner() {
+function digit_scanner() {
   return [
     ['0', 0],
     ['1', 1],
@@ -51,7 +52,7 @@ function digitScanner() {
     ['seven', 7],
     ['eight', 8],
     ['nine', 9],
-  ].map(([s, r]) => createScanner(s, r))
+  ].map(([s, r]) => create_scanner(s, r))
 }
 
 
@@ -61,7 +62,7 @@ function parseLine(line) {
   let res = [];
 
   for (let i = 0; i < line.length; i++) {
-    scanner = scanner.concat(digitScanner())
+    scanner = scanner.concat(digit_scanner())
     const c = line.charAt(i);
     scanner = scanner.filter(sc => { 
       const {result, op} = sc(c);

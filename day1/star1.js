@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const readline = require('node:readline')
 
-function parseLine(line) {
+function parse_line(line) {
   let a, b;
 
   for (let i = 0; i < line.length; i++) {
@@ -17,7 +17,7 @@ function parseLine(line) {
   return 10 * a + 1 * b;
 }
 
-async function processInput() {
+async function process_input() {
   const rl = readline.createInterface({
     input: fs.createReadStream('input.txt'),
     crlfDelay: Infinity,
@@ -26,12 +26,12 @@ async function processInput() {
   let sum = 0;
 
   for await (const line of rl) {
-    sum = sum + parseLine(line);
+    sum = sum + parse_line(line);
   }
 
   return sum;
 }
 
-processInput()
+process_input()
   .then(result => console.log(`Total of input: ${result}`));
 
