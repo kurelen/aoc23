@@ -4,10 +4,9 @@ const readline = require('node:readline')
 function collect() {
   const result = [];
   return function next(item) {
-    if (arguments.length === 0) {
-      return result;
-    }
-    result.push(item);
+    return (arguments.length === 0)
+      ? result
+      : result.push(item);
   };
 }
 
