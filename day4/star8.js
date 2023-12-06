@@ -57,9 +57,19 @@ function intersection(xs, ys) {
 
 process_file('input.txt', parser)
   .then((p) => {
-    const result = p.rounds
-          .map(({winning, having}) => intersection(winning, having))
-          .map(n => n === 0 ? 0 : 2 ** (n - 1))
-          .reduce((a, b) => a + b, 0);
-    console.log(`Total points: ${result}`);
+    const cards = new Array(p.rounds.length).fill(1);
+    const winnings = p.rounds
+          .map(({card, winning, having}) => intersection(winning, having));
+
+    for (let i = 0; i < cards.length; i++) {
+      const c = cards[i];
+      const w = winnings[i];
+      for (let j = 1; j <= w; j++) {
+        cards[i + j] += c;
+      }
+    }
+
+    const result = cards.reduce((a, b) => a + b, 0);
+
+    console.log(`Total number of scratch cards: ${result}`);
   });
