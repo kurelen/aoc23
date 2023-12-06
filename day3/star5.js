@@ -1,30 +1,80 @@
 const fs = require('node:fs');
 const readline = require('node:readline')
 
-function collect() {
-  const result = [];
-  return function next(item) {
-    return (arguments.length === 0)
-      ? result
-      : result.push(item);
-  };
+function generate_parser() {
+  const map = [];
+  const special_character = []
+  let row_nr = 0;
+
+  return {
+    parse_line(line) {
+      const row = [];
+      let o;
+      for (let column_nr = 0; column_nr < line.length; column_nr++) {
+        const ch = line.charAt(column_nr);
+        if (ch === '.') {
+          o = undefined;
+          continue;
+        } else if ('0' <= ch && ch <= '9') {
+          const digit = parseInt(ch);
+          if (!o || o.type !== 'number' ) {
+            o = { type: 'number', value: digit };
+          } else {
+            o.value = o.value * 10 + digit;
+          }
+        } else {
+          o = { type: 'special_character', value: ch };
+          special_character.push([ch, row_nr, column_nr]);
+        }
+        row[column_nr] = o;
+      }
+      map.push(row);
+      row_nr = row_nr + 1;
+    },
+    finish() {
+      Object.freeze(map);
+      Object.freeze(special_character);
+    },
+    map,
+    special_character,
+  }
 }
 
-function parse_line(line) {
-  return [...line];
-}
 
-async function process_file(file, parse_line, reducer) {
+async function process_file(file, parser) {
   const rl = readline.createInterface({
     input: fs.createReadStream(file),
     crlfDelay: Infinity,
   });
   for await (const line of rl) {
-    reducer(parse_line(line));
+    parser.parse_line(line);
   }
-  return reducer;
+  parser.finish()
+  return parser
 }
 
-process_file('input.txt', parse_line, collect())
-  .then(result => console.log(`Parsed input`, result()));
+const parser = generate_parser()
 
+process_file('input.txt', parser)
+  .then((p) => {
+    const collection = new Set()
+    const offsets = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [ 0, -1],          [ 0, 1],
+      [ 1, -1], [ 1, 0], [ 1, 1],
+    ];
+    p.special_character.forEach(([ch, row, column]) => {
+      offsets.forEach(([i, j]) => {
+        const o = p.map[row + i][column + j]
+        if (o && o.type === 'number') {
+          collection.add(o);
+        }
+      })
+    })
+
+    const result = Array.from(collection)
+      .reduce((acc, {value}) => acc + value, 0);
+
+    console.log(`The engines part number is ${result}`)
+    return result;
+  });
