@@ -3,7 +3,7 @@ const readline = require('node:readline')
 
 function generate_parser() {
   const map = [];
-  const special_character = []
+  const special_character = [];
   let row_nr = 0;
 
   return {
@@ -37,7 +37,7 @@ function generate_parser() {
     },
     map,
     special_character,
-  }
+  };
 }
 
 
@@ -49,15 +49,15 @@ async function process_file(file, parser) {
   for await (const line of rl) {
     parser.parse_line(line);
   }
-  parser.finish()
-  return parser
+  parser.finish();
+  return parser;
 }
 
-const parser = generate_parser()
+const parser = generate_parser();
 
 process_file('input.txt', parser)
   .then((p) => {
-    const collection = new Set()
+    const collection = new Set();
     const offsets = [
       [-1, -1], [-1, 0], [-1, 1],
       [ 0, -1],          [ 0, 1],
@@ -65,12 +65,12 @@ process_file('input.txt', parser)
     ];
     p.special_character.forEach(([ch, row, column]) => {
       offsets.forEach(([i, j]) => {
-        const o = p.map[row + i][column + j]
+        const o = p.map[row + i][column + j];
         if (o && o.type === 'number') {
           collection.add(o);
         }
-      })
-    })
+      });
+    });
 
     const result = Array.from(collection)
       .reduce((acc, {value}) => acc + value, 0);

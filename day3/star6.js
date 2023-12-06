@@ -3,7 +3,7 @@ const readline = require('node:readline')
 
 function generate_parser() {
   const map = [];
-  const special_character = []
+  const special_character = [];
   let row_nr = 0;
 
   return {
@@ -37,7 +37,7 @@ function generate_parser() {
     },
     map,
     special_character,
-  }
+  };
 }
 
 async function process_file(file, parser) {
@@ -48,11 +48,11 @@ async function process_file(file, parser) {
   for await (const line of rl) {
     parser.parse_line(line);
   }
-  parser.finish()
-  return parser
+  parser.finish();
+  return parser;
 }
 
-const parser = generate_parser()
+const parser = generate_parser();
 
 process_file('input.txt', parser)
   .then((p) => {
@@ -66,7 +66,7 @@ process_file('input.txt', parser)
       .map(([ch, row, column]) => {
         const part_numbers = new Set();
         offsets.forEach(([i, j]) => {
-          const o = p.map[row + i][column + j]
+          const o = p.map[row + i][column + j];
           if (o && o.type === 'number') {
             part_numbers.add(o);
           }
@@ -77,7 +77,7 @@ process_file('input.txt', parser)
       .reduce((acc, s) => {
         const [a, b] = Array.from(s);
         return acc + a.value * b.value;
-      }, 0)
+      }, 0);
 
     console.log(`The gear ratio number is ${result}`)
     return result;
