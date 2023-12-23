@@ -1,8 +1,6 @@
 const fs = require('node:fs');
 const readline = require('node:readline')
 
-const line_r = /(\w+) (\d+)/g;
-
 function frequencies(strings) {
   const result = {};
   strings.forEach(s => {
