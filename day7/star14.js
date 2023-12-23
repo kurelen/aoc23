@@ -16,22 +16,44 @@ function frequencies(strings) {
 }
 
 function hand_type(hand) {
-  const entries = Object.entries(frequencies([...hand]));
-  if (entries.length === 5) {
-    return 'high card'
-  } else if (entries.length === 4) {
-    return 'one pair'
-  } else if (entries.length === 3) {
-    return entries.some(([_, c]) => c === 3)
+  const freq = frequencies([...hand])
+  const entries = Object.entries(freq);
+  const hand_type =
+    entries.length === 5
+    ? 'high card'
+    : entries.length === 4
+    ? 'one pair'
+    : entries.length === 3
+    ? (entries.some(([_, c]) => c === 3) 
       ? 'three of a kind'
-      : 'two pair'; 
-  } else if (entries.length === 2) {
-    return entries.some(([_, c]) => c === 4)
+      : 'two pair')
+    : entries.length === 2
+    ? (entries.some(([_, c]) => c === 4)
       ? 'four of a kind'
-      : 'full house'; 
-  } else {
-    return 'five of a kind';
+      : 'full house')
+    : 'five of a kind';
+
+  const js = freq['J']
+  if (!js || js === 5) {
+    return hand_type;
   }
+  if (hand_type === 'high card' && js === 1) {
+    return 'one pair';
+  }
+  if (hand_type === 'one pair') { 
+    return 'three of a kind';
+  }
+  if ( (hand_type === 'three of a kind')
+    || (hand_type === 'two pair' && js === 2)) {
+    return 'four of a kind';
+  }
+  if ( hand_type === 'two pair' && js === 1) {
+    return 'full house';
+  }
+  if (hand_type === 'full house' || hand_type === 'four of a kind') {
+    return 'five of a kind'
+  }
+  throw new Error('Unhandled case', {cause: hand} );
 }
 
 function type_value(hand_type) {
@@ -56,6 +78,8 @@ function type_value(hand_type) {
 
 function face_value(face) {
   switch (face) {
+    case 'J':
+      return 1;
     case '2':
       return 2;
     case '3':
@@ -74,8 +98,6 @@ function face_value(face) {
       return 9;
     case 'T':
       return 10;
-    case 'J':
-      return 11;
     case 'Q':
       return 12;
     case 'K':
