@@ -12,22 +12,16 @@ function frequencies(strings) {
       result[s] = 1;
     }
   });
-
   return result;
 }
 
 function hand_type(hand) {
   const entries = Object.entries(frequencies([...hand]));
   if (entries.length === 5) {
-    // High card
     return 'high card'
-    return 0;
   } else if (entries.length === 4) {
-    // One Pair
     return 'one pair'
-    return 1;
   } else if (entries.length === 3) {
-    // two pair or three of a kind
     return entries.some(([_, c]) => c === 3)
       ? 'three of a kind'
       : 'two pair'; 
@@ -36,9 +30,9 @@ function hand_type(hand) {
       ? 'four of a kind'
       : 'full house'; 
   } else {
-    // five of a kind
     return 'five of a kind';
   }
+  throw new Error('Unknown hand', { cause: hand });
 }
 
 function type_value(hand_type) {
@@ -149,8 +143,8 @@ const parser = generate_parser();
 
 process_file('input', parser)
   .then((p) => {
-    const sorted = p.hands.toSorted(hand_sort);
-    const result = sorted
+    const result = p.hands
+      .toSorted(hand_sort)
       .reverse()
       .map(([_, rank]) => rank)
       .reduce((acc, cur, idx) => acc + (idx + 1) * cur);
