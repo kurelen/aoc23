@@ -58,6 +58,50 @@ function type_value(hand_type) {
     case 'five of a kind':
       return 6;
   }
+  throw new Error('Unknown hand type', { cause: hand_type })
+}
+
+function face_value(face) {
+  switch (face) {
+    case '2':
+      return 2;
+    case '3':
+      return 3;
+    case '4':
+      return 4;
+    case '5':
+      return 5;
+    case '6':
+      return 6;
+    case '7':
+      return 7;
+    case '8':
+      return 8;
+    case '9':
+      return 9;
+    case 'T':
+      return 10;
+    case 'J':
+      return 11;
+    case 'Q':
+      return 12;
+    case 'K':
+      return 13;
+    case 'A':
+      return 14;
+  }
+  throw new Error('Unknown card face', { cause: face })
+}
+
+function face_sort(hand1, hand2) {
+  for (let i=0; i < hand1.length; i++) {
+    const fv1 = face_value(hand1[i]);
+    const fv2 = face_value(hand2[i]);
+    if (fv1 !== fv2) {
+      return fv2 - fv1;
+    }
+  }
+  return 0;
 }
 
 function hand_sort([hand1], [hand2]) {
@@ -65,8 +109,7 @@ function hand_sort([hand1], [hand2]) {
   const b = type_value(hand_type(hand2));
 
   if (a === b) {
-    // TODO: Add this sorting case
-    return 1
+    return face_sort(hand1, hand2);
   }
   return b - a;
 }
@@ -106,5 +149,10 @@ const parser = generate_parser();
 
 process_file('input', parser)
   .then((p) => {
-    console.log(p.hands.toSorted(hand_sort));
+    const sorted = p.hands.toSorted(hand_sort);
+    const result = sorted
+      .reverse()
+      .map(([_, rank]) => rank)
+      .reduce((acc, cur, idx) => acc + (idx + 1) * cur);
+    console.log(result);
   });
