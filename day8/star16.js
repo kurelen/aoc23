@@ -6,21 +6,16 @@ const line_r = /(\w+) = \((\w+), (\w+)\)/g;
 function walker(directions) {
   let i = 0;
   let counter = 0;
-  let log = 10;
   return {
     steps() {
       return counter;
     },
+    index() {
+      return i;
+    },
     next() {
       const result = directions[i];
       counter++;
-      if (counter === log) {
-        console.log(`Beep at ${counter}`);
-        log *= 10;
-        if (log >= 1e30) {
-          throw new Error('This problem needs a mathematical solution');
-        }
-      }
       i++;
       if (i >= directions.length) {
         i = 0;
@@ -90,20 +85,61 @@ function negate(predicate_fn) {
   }
 }
 
+function orbit(maps, dirs, key) {
+  let step = 0;
+  let index = 0;
+  const visited = {};
+  const start_key = key;
+  const ends_with_z = ends_with('Z');
+  const result = { start_key };
+
+  while (true) {
+    if (ends_with_z(key)) {
+      result.goal = { key, step, index }
+    }
+    if (Object.hasOwn(visited, key)) {
+      if (Object.hasOwn(visited[key], index)) {
+        result.beginning = { key, step, index };
+        result.period = visited[key]
+        return result
+      } else {
+        visited[key][index] = step;
+      }
+    } else {
+      visited[key] = { [index]: step } ;
+    }
+    step++;
+    index++;
+    if (index == dirs.length) {
+      index = 0;
+    }
+    const d = dirs[index];
+    const [l, r] = maps[key]; 
+    key = d === 'L' ? l : r;
+  }
+}
+
 process_file('input', parser)
   .then((p) => {
+    // SLA AAA LVA NPA GDA RCA
     const w = walker(p.directions);
     const m = p.maps
+    const ends_with_z = ends_with('Z');
     let keys = Object.keys(p.maps).filter(ends_with('A'));
-    const not_ends_with_Z = negate(ends_with('Z'));
-    while (keys.some(not_ends_with_Z)) {
+    const orbs = keys
+      .map(key => orbit(p.maps, p.directions, key))
+     // .map(([_k, i, step]) => step)
+    console.log(orbs);
+    return;
+
+    while (!keys.every(ends_with_z)) {
+      return
       const d = w.next();
       const new_keys = keys.map(key => {
         const [l, r] = m[key]; 
-        return d === 'L' ? l : r
-      })
+        return d === 'L' ? l : r;
+      });
       keys = new_keys;
-      
     }
-    console.log(`Required steps from 'AAA' to 'ZZZ': ${w.steps()}`);
+    console.log(`Period of '${fix}': ${w.steps()}`);
   });
