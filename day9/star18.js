@@ -1,8 +1,8 @@
 const fs = require('node:fs');
 const readline = require('node:readline')
 
-function last(xs) {
-  return xs[xs.length - 1];
+function first(xs) {
+  return xs[0];
 }
 
 function all_zeroes(xs) {
@@ -26,11 +26,11 @@ function build_stack(xs) {
   return stack;
 }
 
-function extend(xs) {
+function prepend(xs) {
   const stack = build_stack(xs);
   return build_stack(xs)
-    .map(last)
-    .reduce((a,b) => a + b, 0);
+    .map(first)
+    .reduce((a,b) => b - a, 0);
 }
 
 function generate_parser() {
@@ -70,7 +70,7 @@ const parser = generate_parser();
 process_file('input', parser)
   .then((p) => {
     const result = p.measurements
-      .map(extend)
+      .map(prepend)
       .reduce((a,b) => a + b, 0);
     console.log(result);
   });
